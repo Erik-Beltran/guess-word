@@ -90,6 +90,9 @@ const Board = () => {
   }, [attemps, solution]);
 
   const handleKey = (key: string) => {
+    if (currentGuess.length >= solution.length) {
+      return;
+    }
     setCurrentGuess((prev) => prev + key.toLocaleLowerCase());
   };
 
