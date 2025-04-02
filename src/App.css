@@ -97,6 +97,10 @@
   }
 }
 
+button {
+  color: white;
+}
+
 @media (max-width: 768px) {
   h1 {
     font-size: xx-large;
