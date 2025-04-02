@@ -125,9 +125,10 @@ button {
 
   .letter {
     width: 18px;
-    height: 18px;
+    height: 28px;
     font-size: xx-small;
     font-weight: bold;
+    border-radius: 4px;
   }
 
   .submit-button {
