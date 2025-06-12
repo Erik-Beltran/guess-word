@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Line from "./Line";
 import KeyBoard from "./KeyBoard";
 import LevelModal from "./LevelModal";
+import LoadingIcon from "./LoadingIcon";
 const USER_ATTEMPS = 6;
 
 const Board = () => {
@@ -13,6 +14,7 @@ const Board = () => {
   const [wordsUsed, setWordsUsed] = useState<Set<string>>(new Set());
   const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
   const [selectedLevel, setSelectedLevel] = useState<number>(5);
+  const [isLoading, setisLoading] = useState<boolean>(false);
 
   const handleReset = () => {
     setAttemps(Array(USER_ATTEMPS).fill(null));
@@ -28,12 +30,20 @@ const Board = () => {
     const url = buildUrl(level);
 
     if (url) {
-      const result = await fetch(url);
-      const response = await result.json();
+      setisLoading(true);
 
-      const randomWord =
-        response[Math.floor(Math.random() * response.length)].word;
-      setSolution(randomWord);
+      try {
+        const result = await fetch(url);
+        const response = await result.json();
+
+        const randomWord =
+          response[Math.floor(Math.random() * response.length)].word;
+        setSolution(randomWord);
+      } catch (error) {
+        console.log("error", error);
+      } finally {
+        setisLoading(false);
+      }
     }
   };
 
@@ -161,18 +171,25 @@ const Board = () => {
             </>
           )}
       </div>
-      {attemps.map((line, index) => {
-        const isCurrentLine = index === attemps.findIndex((val) => val == null);
+      {isLoading ? (
+        <LoadingIcon />
+      ) : (
+        <>
+          {attemps.map((line, index) => {
+            const isCurrentLine =
+              index === attemps.findIndex((val) => val == null);
 
-        return (
-          <Line
-            key={index}
-            solution={solution}
-            line={isCurrentLine ? currentGuess : line ?? ""}
-            finishType={line && line.length === solution.length}
-          />
-        );
-      })}
+            return (
+              <Line
+                key={index}
+                solution={solution}
+                line={isCurrentLine ? currentGuess : line ?? ""}
+                finishType={line && line.length === solution.length}
+              />
+            );
+          })}
+        </>
+      )}
       <KeyBoard
         handleKey={handleKey}
         handleSubmit={handleSubmit}
